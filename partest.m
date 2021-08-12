@@ -19,22 +19,26 @@ function partest(x,varargin)
 % 
 %     Outputs:
 %           - Prevalence
-%           - Sensibility
-%           - Specificity
-%           - False positive and negative proportions
-%           - False discovery and discovery rates
+%           - Sensibility and false negative rate
+%           - Specificity and false positive rate
 %           - Youden's Index and Number Needed to Diagnose (NDD)
-%           - Positive predictivity
-%           - Positive Likelihood Ratio
-%           - Negative predictivity
-%           - Negative Likelihood Ratio
-%           - Predictive Summary Index (PSI) and Number Needed to Screen (NNS)
-%           - Test Accuracy
-%           - Mis-classification Rate
-%           - F-Measure
+%           - False discovery and discovery rates
+%           - Prevalence threshold
+%           - Positive and Negative Likelihood Ratio
+%           - Positive and Negative predictivity
+%           - False discovery and omission rate
+%           - Predictive Summary Index (PSI) and Number Needed to Predict (NNP)
+%           - Test Accuracy, Identification Index and Number Needed to Screen (NNS)
+%           - Misclassification Rate and Number Needed to Misdiagnose (NNMD)
+%           - F-Measure; G- Measure; Matthews Index
+%           - Threat score (TS) or critical success index (CSI)
+%           - Gilbert Skill Score; True Skill Statistic; Heidke Skill Score
 %           - Test bias
-%           - Error odds ratio
+%           - Error odds ratio and Cramer's V
+%           - Risk Ratio
 %           - Diagnostic odds ratio
+%           - Yule's Coefficient
+%           - Tetrachoric Coefficient
 %           - Discriminant Power
 % 
 %      Example: 
@@ -45,45 +49,81 @@ function partest(x,varargin)
 % 
 % DIAGNOSTIC TEST PERFORMANCE PARAMETERS
 % ----------------------------------------------------------------------------------------------------
-% Prevalence: 31.4% (29.6% - 33.2%)
+% Estimed Prevalence: 0.3137 (0.2959 - 0.3321)
 %  
-% Sensitivity (probability that test is positive on unhealthy subject): 90.4% (89.1% - 91.5%)
-% False negative proportion: 9.6% (8.5% - 10.9%)
-% False discovery rate: 27.0% (25.3% - 28.7%)
+% Sensitivity, Recall, Hit rate or True Positive rate (TPR): 0.9036 (0.8914 - 0.9146)
+% Miss rate or False Negative rate (FNR): 0.0964 (0.0854 - 0.1086)
 %  
-% Specificity (probability that test is negative on healthy subject): 84.7% (83.3% - 86.1%)
-% False positive proportion: 15.3% (13.9% - 16.7%)
-% False omission rate: 4.9% (4.2% - 5.9%)
+% Specificity, Selectivity or True Negative Rate (TNR): 0.8475 (0.8329 - 0.8610)
+% Fall-out or False Positive rate (FPR): 0.1525 (0.1390 - 0.1671)
 %  
-% Youden's Index (a perfect test would have a Youden's index of +1): 0.7510
+% Informedness - Youden's Index - J: 0.7510
 % Number Needed to Diagnose (NND): 1.33
-% Around 14 persons need to be tested to return 10 positive tests for the presence of disease
+% Around 134 patients need to be tested to correctly detect 100 positive tests for the presence of disease
 %  
-% Precision or Predictivity of positive test
-% (probability that a subject is unhealthy when test is positive): 73.0% (71.3% - 74.7%)
-% Positive Likelihood Ratio: 5.9 (5.7 - 6.2)
+% Prevalence Threshold (PT): 0.2912
+%  
+% Positive Likelihood Ratio (PLR): 5.9235 (5.6953 - 6.1609)
 % Moderate increase in possibility of disease presence
 %  
-% Predictivity of negative test
-% (probability that a subject is healthy when test is negative): 95.1% (94.1% - 95.8%)
-% Negative Likelihood Ratio: 0.1138 (0.1094 - 0.1183)
+% Negative Likelihood Ratio (NLR): 0.1138 (0.1094 - 0.1183)
 % Moderate increase in possibility of disease absence
 %  
-% Predictive Summary Index: 0.6808
-% Number Needed to Screen (NNS): 1.47
-% Around 15 persons need to be screened to avoid 10 events (i.e. death) for the presence of disease
+% Precision or Positive Predictive Value (PPV): 0.7303 (0.7126 - 0.7472)
+% False discovery rate (FDR): 0.2697 (0.2528 - 0.2874)
 %  
-% Accuracy or Potency: 86.5% (85.1% - 87.8%)
-% Mis-classification Rate: 13.5% (12.2% - 14.9%)
-% F-measure: 80.8% (79.2% - 82.3%)
+% Negative Predictive Value (NPV): 0.9506 (0.9413 - 0.9585)
+% False omission rate (FOR): 0.0494 (0.0415 - 0.0587)
 %  
-% Test bias: 1.2373 (0.9474 - 1.6160)
-% Test overestimates the phenomenon
+% Markedness - Predictive Summary Index (PSI): 0.6808
+% Number Needed to Predict (NNP): 1.47
+% Around 147 patients need to be screened to correctly predict 100 diagnosis
+%  
+% Accuracy or Potency (ACC): 0.8651 (0.8511 - 0.8779)
+% Identification Index (II): 0.7301
+% Number Needed to Screen (NNS): 1.37
+% Around 137 patients need to be screened to prevent 100 deaths by disease.
+%  
+% Mis-classification Rate (MCR): 0.1349 (0.1221 - 0.1489)
+% Number Needed to Mis-diagnose (NNMD): 7.41
+% Around 742 patients need to be screened to have 100 mis-diagnosis
+%  
+% Balanced Accuracy or Potency (BA): 0.8755 (0.8620 - 0.8879)
+% Balanced Identification Index (BII): 0.7510
+% Balanced Number Needed to Screen (NNS): 1.33
+% Around 134 patients need to be screened to prevent 100 deaths by disease.
+%  
+% Balanced Mis-classification Rate (BMCR): 0.1349 (0.1221 - 0.1489)
+% Number Needed to Mis-diagnose (BNNMD): 7.41
+% Around 742 patients need to be screened to have 100 mis-diagnosis
+%  
+% F1-measure (Sørensen–Dice index): 0.8077 (0.7919 - 0.8227)
+% G-measure (Fowlkes–Mallows index): 0.8123 (0.7966 - 0.8271)
+% Matthews index: 0.7151 (0.6972 - 0.7324)
+%  
+% Threat score (TS) or critical success index (CSI): 0.6775 (0.6590 - 0.6954)
+% Gilbert Skill Score: 0.5451 (0.5256 - 0.5644)
+% True Skill Statistic (Hanssen-Kuipper skill score; Pierce's skill score): 0.7510 (0.7338 - 0.7675)
+% Heidke Skill Score (Cohen's Kappa): 0.7056 (0.6768 - 0.7344)
+%  
+% Test bias: 1.2373 (0.9474 - 1.6160) - Test overestimates the phenomenon
 % Error odds ratio: 1.6869 (1.2916 - 2.2032)
-% Diagnostic odds ratio: 52.0655 (39.8649 - 68.0002)1.0968
-% Discriminant Power: 2.2
-%      A test with a discriminant value of 1 is not effective in discriminating between affected and unaffected individuals.
-%      A test with a discriminant value of 3 is effective in discriminating between affected and unaffected individuals.
+% Diagnostic odds ratio: 52.0655 (39.8649 - 68.0002)
+% Normalized Diagnostic odds ratio: 0.9623
+% Cramer's V: 0.7141
+% Strong positive association (risk factor)
+% 
+% Bayesian Credibility Assessment
+% Critical Diagnostic Odds Ratio: 1.0182
+% DOR>COR. Test is credible at the 95%
+%  
+% Risk Ratio: 11.3119<14.7739<19.2955
+% Absolute risk reduction: 68.1%
+% Relative risk reduction: 93.2%
+%  
+% Yule's Coefficient: 0.9623
+% Tetrachoric Coefficient: 0.9278
+% Discriminant Power: 2.1791
 %    
 % 
 %           Created by Giuseppe Cardillo
@@ -99,26 +139,53 @@ p = inputParser;
 addRequired(p,'x',@(x) validateattributes(x,{'numeric'},{'real','finite','integer','nonnegative','nonnan','size',[2 2]}));
 addOptional(p,'alpha',0.05, @(x) validateattributes(x,{'numeric'},{'scalar','real','finite','nonnan','>',0,'<',1}));
 parse(p,x,varargin{:});
-x=p.Results.x; alpha=p.Results.alpha;
+alpha=p.Results.alpha;
 clear p
-
+x(x==0)=0.5;
 z=-realsqrt(2)*erfcinv(2-alpha);
 cs=sum(x); %columns sum
 rs=sum(x,2); %rows sums
 N=sum(x(:)); %numbers of elements
-d=diag(x); %true positives and true negatives
 
-clc
-disp('DIAGNOSTIC TEST PERFORMANCE PARAMETERS')
-disp(repmat('-',1,100))
-%Prevalence
-%the prevalence of disease is estimated all D+/N 
-pr=(cs(1)/N); 
-%95% confidence interval critical value for Prevalence
-prci=newcombe(pr);
-fprintf('Prevalence: %0.1f%% (%0.1f%% - %0.1f%%)\n',pr*100,prci(1).*100,prci(2).*100)
+ButtonName = questdlg('Do you want to input the true prevalence?', 'Prevalence Question', 'Yes', 'No', 'No');
+if strcmp(ButtonName,'Yes')
+    ButtonName = questdlg('Do you want to input the true prevalence as:', 'Prevalence Question', 'Ratio', 'Probability', 'Ratio');
+    switch ButtonName
+        case 'Ratio'
+            prompt={'Enter the Numerator or the prevalence ratio:','Enter the denominator or the prevalence ratio:'};
+            name='Input for Ratio prevalence';
+            Ratio=str2double(inputdlg(prompt,name));
+            pr=Ratio(1)/Ratio(2);
+        case 'Probability'
+            prompt={'Enter the prevalence probability comprised between 0 and 1:'};
+            name='Input for prevalence';
+            pr=str2double(inputdlg(prompt,name));
+    end
+    disp('DIAGNOSTIC TEST PERFORMANCE PARAMETERS')
+    disp(repmat('-',1,100))
+    if pr<1e-4
+        fprintf('Reported Prevalence: %0.4e\n',pr)
+    else
+        fprintf('Reported Prevalence: %0.4f\n',pr)
+    end
+    clear prompt name Ratio 
+else
+    %Prevalence
+    %the prevalence of disease is estimated all D+/N
+    pr=(cs(1)/N);
+    %95% confidence interval critical value for Prevalence
+    prci=newcombe(pr);
+    disp('DIAGNOSTIC TEST PERFORMANCE PARAMETERS')
+    disp(repmat('-',1,100))
+    if pr<1e-4
+        fprintf('Estimed Prevalence: %0.4e (%0.4e - %0.4e)\n',pr,prci(1),prci(2))
+    else
+        fprintf('Estimed Prevalence: %0.4f (%0.4f - %0.4f)\n',pr,prci(1),prci(2))
+    end
+end
 disp(' ')
 
+d=diag(x); %true positives and true negatives
 %Sensitivity and Specificity
 %The Sensitivity is the probability that the test is positive on sick subjects: P(T+|D+) 
 %The Specificity is the probability that the test is negative on healthy subjects: P(T-|D-) 
@@ -126,21 +193,15 @@ disp(' ')
 SS=d./cs'; %Sensitivity and Specificity
 %Of course the false proportion is the complement to 1
 fp=1-SS; %false proportions
-%The false discovery rate is the probability that the disease is absent when the test is positive: P(D-|T+) 
-%The false omission rate is the probability that the disease is present when the test is negative: P(D+|T-) 
-fd=diag(rot90(x))./rs; %false discovery and omission rate
-
 % 95% confidence intervals
 Seci=newcombe(SS(1)); Spci=newcombe(SS(2));
 fnci=newcombe(fp(1)); fpci=newcombe(fp(2));
-fdci=newcombe(fd(1)); foci=newcombe(fd(2));
-fprintf('Sensitivity (probability that test is positive on unhealthy subject): %0.1f%% (%0.1f%% - %0.1f%%)\n',SS(1)*100,Seci(1).*100,Seci(2).*100)
-fprintf('False negative proportion: %0.1f%% (%0.1f%% - %0.1f%%)\n',fp(1)*100,fnci(1).*100,fnci(2).*100)
-fprintf('False discovery rate: %0.1f%% (%0.1f%% - %0.1f%%)\n',fd(1)*100,fdci(1).*100,fdci(2).*100)
+
+fprintf('Sensitivity, Recall, Hit rate or True Positive rate (TPR): %0.4f (%0.4f - %0.4f)\n',SS(1),Seci(1),Seci(2))
+fprintf('Miss rate or False Negative rate (FNR): %0.4f (%0.4f - %0.4f)\n',fp(1),fnci(1),fnci(2))
 disp(' ')
-fprintf('Specificity (probability that test is negative on healthy subject): %0.1f%% (%0.1f%% - %0.1f%%)\n',SS(2)*100,Spci(1).*100,Spci(2).*100)
-fprintf('False positive proportion: %0.1f%% (%0.1f%% - %0.1f%%)\n',fp(2)*100,fpci(1).*100,fpci(2).*100)
-fprintf('False omission rate: %0.1f%% (%0.1f%% - %0.1f%%)\n',fd(2)*100,foci(1).*100,foci(2).*100)
+fprintf('Specificity, Selectivity or True Negative Rate (TNR): %0.4f (%0.4f - %0.4f)\n',SS(2),Spci(1),Spci(2))
+fprintf('Fall-out or False Positive rate (FPR): %0.4f (%0.4f - %0.4f)\n',fp(2),fpci(1),fpci(2))
 disp(' ')
 
 %Youden's Index
@@ -150,24 +211,25 @@ disp(' ')
 %dichotomous test and it defined as: J = Sensitivity + Specificity - 1. 
 %A perfect test has J=1. 
 J=sum(SS)-1; %Youden's index
-fprintf('Youden''s Index (a perfect test would have a Youden''s index of +1): %0.4f\n', J)
+fprintf('Informedness - Youden''s Index - J: %0.4f\n', J)
 
-%The number needed to diagnose is defined as the number of patients that
-%need to be tested to give one correct positive test.
+%The inverse of J has been defined as the “number needed to diagnose”
+%(NND), that is, the number of patients who need to be examined in order
+%to correctly detect one person with the disease of interest in a study
+%population of persons with and without the known disease    
 NND=1/J; %Number needed to Diagnose (NND)
 fprintf('Number Needed to Diagnose (NND): %0.2f\n',NND);
-fprintf('Around %i persons need to be tested to return 10 positive tests for the presence of disease\n',ceil(NND*10)) 
+fprintf('Around %i patients need to be tested to correctly detect 100 positive tests for the presence of disease\n',ceil(NND*100)) 
 disp(' ')
 
-%Positive and Negative predictivity
-%Positive predictivity is the probability that a subject is sick when test is positive: P(D+|T+)
-%Negative predictivity is the probability that a subject is healthy when test is negative: P(D-|T-)
-%Positive predictivity=Precision
-%In Matlab both parameters are obtained with only one instruction:
-PNp=d./rs; %Positive and Negative predictivity
-% 95% confidence interval critical value for Positive and Negative predictivity
-Ppci=newcombe(PNp(1));
-Npci=newcombe(PNp(2));
+%Below a disease prevalence of PT, the PPV for a screening test with
+%these sensitivities and specificities drops significantly and is therefore
+%more unreliable.
+PT=(sqrt(SS(1)*fp(2))+SS(2)-1)/J;
+fprintf('Prevalence Threshold (PT): %0.4f\n', PT)
+disp(' ')
+
+
 %Positive and Negative Likelihood Ratio
 %When we decide to order a diagnostic test, we want to know which test (or
 %tests) will best help us rule-in or rule-out disease in our patient.  In the
@@ -185,53 +247,132 @@ Npci=newcombe(PNp(2));
 %LR+ = sensitivity / (1-specificity)
 %LR- = (1-sensitivity) / specificity
 plr=SS(1)/fp(2); %Positive Likelihood Ratio
-plrci=LRci(plr,x);
 nlr=fp(1)/SS(2); %Negative Likelihood Ratio
+plrci=LRci(plr,x);
 nlrci=LRci(nlr,x);
-
-fprintf('Precision or Predictivity of positive test\n')
-fprintf('(probability that a subject is unhealthy when test is positive): %0.7f%% (%0.7f%% - %0.7f%%)\n', PNp(1)*100,Ppci(1).*100,Ppci(2).*100)
-fprintf('Positive Likelihood Ratio: %0.4f (%0.4f - %0.4f)\n',plr,plrci(1),plrci(2))
+fprintf('Positive Likelihood Ratio (PLR): %0.4f (%0.4f - %0.4f)\n',plr,plrci(1),plrci(2))
 dlr(plr)
 disp(' ')
-fprintf('Predictivity of negative test\n')
-fprintf('(probability that a subject is healthy when test is negative): %0.7f%% (%0.7f%% - %0.7f%%)\n', PNp(2)*100,Npci(1).*100,Npci(2).*100)
 if nlr<1e-4 || nlrci(1)<1e-4
-    fprintf('Negative Likelihood Ratio: %0.4e (%0.4e - %0.4e)\n',nlr,nlrci(1),nlrci(2))
+    fprintf('Negative Likelihood Ratio (NLR): %0.4e (%0.4e - %0.4e)\n',nlr,nlrci(1),nlrci(2))
 else
-    fprintf('Negative Likelihood Ratio: %0.4f (%0.4f - %0.4f)\n',nlr,nlrci(1),nlrci(2))
+    fprintf('Negative Likelihood Ratio (NLR): %0.4f (%0.4f - %0.4f)\n',nlr,nlrci(1),nlrci(2))
 end
 dlr(nlr)
 disp(' ')
 
+%Positive and Negative predictivity
+%Positive predictivity is the probability that a subject is sick when test is positive: P(D+|T+)
+%Negative predictivity is the probability that a subject is healthy when test is negative: P(D-|T-)
+%Positive predictivity=Precision
+%apply Bayes Theorem
+po=pr/(1-pr);%prior odds
+PNp=[1/(1+1/(plr*po)) 1/(1+nlr*po)]; %Positive and Negative predictivity
+%The false discovery rate is the probability that the disease is absent when the test is positive: P(D-|T+) 
+%The false omission rate is the probability that the disease is present when the test is negative: P(D+|T-)
+fd=1-PNp; %false discovery and omission rate
+% 95% confidence interval critical value for Positive and Negative predictivity
+Ppci=newcombe(PNp(1));
+Npci=newcombe(PNp(2));
+fdci=newcombe(fd(1)); 
+foci=newcombe(fd(2));
+fprintf('Precision or Positive Predictive Value (PPV): %0.4f (%0.4f - %0.4f)\n', PNp(1),Ppci(1),Ppci(2))
+fprintf('False discovery rate (FDR): %0.4f (%0.4f - %0.4f)\n',fd(1),fdci(1),fdci(2))
+disp(' ')
+fprintf('Negative Predictive Value (NPV): %0.4f (%0.4f - %0.4f)\n', PNp(2),Npci(1),Npci(2))
+fprintf('False omission rate (FOR): %0.4f (%0.4f - %0.4f)\n',fd(2),foci(1),foci(2))
+disp(' ')
 %Predictive Summary Index (similar to Youden's Index)
 PSI=sum(PNp)-1;
-NNS=1/PSI; %Number needed to screen
-fprintf('Predictive Summary Index: %0.4f\n', PSI)
-fprintf('Number Needed to Screen (NNS): %0.2f\n',NNS);
-fprintf('Around %i persons need to be screened to avoid 10 events (i.e. death) for the presence of disease\n',ceil(NNS*10)) 
+NNP=1/PSI; %Number needed to screen
+fprintf('Markedness - Predictive Summary Index (PSI): %0.4f\n', PSI)
+fprintf('Number Needed to Predict (NNP): %0.2f\n',NNP);
+fprintf('Around %i patients need to be screened to correctly predict 100 diagnosis\n',ceil(NNP*100)) 
 disp(' ')
 
 %Accuracy and Mis-classification rate
 %Diagnostic accuracy (or Power) is defined as the proportion of all tests
 %that give a correct result. The Mis-classification rate is its complement to 1. 
-%In statistics, the F1 score (also F-score or F-measure) is a measure of a
-%test's accuracy. It considers both the Precision (positive predictivity) 
-%and the Sensitivity of the test to compute the score: 
-%P is the number of correct results divided by the number of all returned results
-%S is the number of correct results divided by the number of results that should 
-%have been returned. 
-%The F1 score can be interpreted as a weighted average of the Precision and
-%Sensitivity, where an F1 score reaches its best value at 1 and worst score at 0. 
 acc=trace(x)/N; %Accuracy
 accci=newcombe(acc);
 mcr=1-acc; %Mis-classification rate
 mcrci=newcombe(mcr);
+fprintf('Accuracy or Potency (ACC): %0.4f (%0.4f - %0.4f)\n',acc,accci(1),accci(2))
+II=2*acc-1; NNS=1/II;
+fprintf('Identification Index (II): %0.4f\n', II)
+fprintf('Number Needed to Screen (NNS): %0.2f\n',NNS);
+fprintf('Around %i patients need to be screened to prevent 100 deaths by disease.\n',ceil(NNS*100)) 
+disp(' ')
+fprintf('Mis-classification Rate (MCR): %0.4f (%0.4f - %0.4f)\n',mcr,mcrci(1),mcrci(2))
+fprintf('Number Needed to Mis-diagnose (NNMD): %0.2f\n',1/mcr);
+fprintf('Around %i patients need to be screened to have 100 mis-diagnosis\n',ceil(100/mcr)) 
+disp(' ')
+
+bacc=mean(SS); %Balanced Accuracy
+baccci=newcombe(bacc);
+bmcr=1-acc; %Balanced Mis-classification rate
+bmcrci=newcombe(bmcr);
+fprintf('Balanced Accuracy or Potency (BA): %0.4f (%0.4f - %0.4f)\n',bacc,baccci(1),baccci(2))
+bII=2*bacc-1; bNNS=1/bII;
+fprintf('Balanced Identification Index (BII): %0.4f\n', bII)
+fprintf('Balanced Number Needed to Screen (NNS): %0.2f\n',bNNS);
+fprintf('Around %i patients need to be screened to prevent 100 deaths by disease.\n',ceil(bNNS*100)) 
+disp(' ')
+fprintf('Balanced Mis-classification Rate (BMCR): %0.4f (%0.4f - %0.4f)\n',bmcr,bmcrci(1),bmcrci(2))
+fprintf('Number Needed to Mis-diagnose (BNNMD): %0.2f\n',1/bmcr);
+fprintf('Around %i patients need to be screened to have 100 mis-diagnosis\n',ceil(100/bmcr)) 
+disp(' ')
+
+%In statistics, the F1 score (also F-score or F-measure or Sørensen–Dice coefficient) is a measure of a
+%test's accuracy. It considers both the Precision (positive predictivity) 
+%and the Sensitivity of the test to compute the score.
+%The F1 score can be interpreted as the harmonic mean of the Precision and
+%Sensitivity, where an F1 score reaches its best value at 1 and worst score at 0. 
+%Similarly, G-Measure (Fowlkes–Mallows index) is the geometric mean of Precision and Sensitivity
 FMeasure=harmmean([SS(1) PNp(1)]); %F-measure
 FMci=newcombe(FMeasure);
-fprintf('Accuracy or Potency: %0.1f%% (%0.1f%% - %0.1f%%)\n',acc*100,accci(1).*100,accci(2).*100)
-fprintf('Mis-classification Rate: %0.1f%% (%0.1f%% - %0.1f%%)\n',mcr*100,mcrci(1).*100,mcrci(2).*100)
-fprintf('F-measure: %0.1f%% (%0.1f%% - %0.1f%%)\n',FMeasure*100,FMci(1).*100,FMci(2).*100)
+GMeasure=geomean([SS(1) PNp(1)]); %G-measure
+GMci=newcombe(GMeasure);
+MMeasure=geomean([J PSI]); %Matthews
+MMci=newcombe(MMeasure);
+
+fprintf('F1-measure (Sørensen–Dice index): %0.4f (%0.4f - %0.4f)\n',FMeasure,FMci(1),FMci(2))
+fprintf('G-measure (Fowlkes–Mallows index): %0.4f (%0.4f - %0.4f)\n',GMeasure,GMci(1),GMci(2))
+fprintf('Matthews index: %0.4f (%0.4f - %0.4f)\n',MMeasure,MMci(1),MMci(2))
+disp(' ')
+
+% Also called the threat score (TS), is a verification measure of categorical forecast performance
+% equal to the total number of correct event forecasts (hits) divided by the total number of storm
+% forecasts plus the number of misses (hits + false alarms + misses). The CSI is not affected by the
+% number of non-event forecasts that verify (correct rejections). However, the CSI is a biased
+% score that is dependent upon the frequency of the event. For an unbiased version of the CSI, see
+% the Gilbert skill score (GS). With respect to the 2x2 verification problem example outlined in the
+% definition of contingency table, CSI= (TP)/(TP+FN+FP).
+TS=x(1)/(N-x(4));
+TSci=newcombe(TS);
+ar=rs(1)*cs(1)/N;
+GS=(x(1)-ar)/(N-x(4)-ar); 
+GSci=newcombe(GS);
+fprintf('Threat score (TS) or critical success index (CSI): %0.4f (%0.4f - %0.4f)\n', TS,TSci(1),TSci(2))
+fprintf('Gilbert Skill Score: %0.4f (%0.4f - %0.4f)\n', GS,GSci(1),GSci(2))
+%true skill statistic
+%popular combination of sensitivity and false positive rate; measures the
+%ability to separate yes and no cases; range from -1 to 1; 
+%perfect score=1; no skill level=0;
+dx=det(x); TSS=dx/prod(cs); TSSci=newcombe(TSS);
+fprintf('True Skill Statistic (Hanssen-Kuipper skill score; Pierce''s skill score): %0.4f (%0.4f - %0.4f)\n',TSS,TSSci(1),TSSci(2))
+
+%Heidke skill score
+% It is another form of Cohen's kappa
+%measures fractional improvements over random chance; range from -inf to 1;
+%perfect score=1; no skill level=0;
+f=diag(ones(1,2));
+po=sum(sum(x./N.*f));
+pe=sum(sum(rs*cs.*f./N^2));
+HSS=(po-pe)/(1-pe); %Cohen's kappa
+sek=sqrt((po*(1-po))/(N*(1-pe)^2)); %kappa standard error for confidence interval
+HSSci=HSS+([-1 1].*(abs(-realsqrt(2)*erfcinv(0.05))*sek)); %k confidence interval
+fprintf('Heidke Skill Score (Cohen''s Kappa): %0.4f (%0.4f - %0.4f)\n',HSS,HSSci(1),HSSci(2))
 disp(' ')
 
 orse=realsqrt(sum(1./x(:))); %standard error of log(OR)
@@ -246,9 +387,14 @@ cv=([-1 1].*(z*orse));
 %A perfect test has a TB=1;
 %If TB<1 the test underestimates the disease because there are more affected than positive test
 %If TB>1 the test overestimates the disease because there are more positive test than affected
-TB=rs(1)/cs(1); %Test Bias
+if all(x(:))
+    TB=rs(1)/cs(1); %Test Bias
+else
+    TB=rsy(1)/csy(1); %Test Bias
+end
+
 orci=exp(reallog(TB)+cv); %OR confidence interval
-fprintf('Test bias: %0.4f (%0.4f - %0.4f)\n',TB,orci(1),orci(2))
+fprintf('Test bias: %0.4f (%0.4f - %0.4f) - ',TB,orci(1),orci(2))
 if TB>1
     disp('Test overestimates the phenomenon')
 elseif TB<1
@@ -256,6 +402,7 @@ elseif TB<1
 else
     disp('There is not test bias')
 end
+
 
 %Error Odds Ratio. 
 %Indicates if the probability of being wrongly classified is highest in the
@@ -265,7 +412,11 @@ end
 %of an incorrect classification is highest in the non-diseased group (and the
 %sensitivity of the test is better than the specificity).     
 %It is defined as (Sensitivity/(1-Sensitivity))/(Specificity/(1-Specificity));
-EOR=(SS(1)/fp(1))/(SS(2)/fp(2)); %Error odds ratio
+if all(x(:))
+    EOR=(SS(1)/fp(1))/(SS(2)/fp(2)); %Error odds ratio
+else
+    EOR=(SSy(1)/fpy(1))/(SSy(2)/fpy(2)); %Error odds ratio
+end
 orci=exp(reallog(EOR)+cv); %OR confidence interval
 fprintf('Error odds ratio: %0.4f (%0.4f - %0.4f)\n',EOR,orci(1),orci(2))
 
@@ -278,9 +429,70 @@ fprintf('Error odds ratio: %0.4f (%0.4f - %0.4f)\n',EOR,orci(1),orci(2))
 %high values above one means that a test discriminates well. Values lower than
 %one mean that there is something wrong in the application of the test.   
 %It is defined as (Sensitivity/(1-Sensitivity))/((1-Specificity)/Specificity);
-DOR=(SS(1)/fp(1))/(fp(2)/SS(2)); %Diagnostic odds ratio
+DOR=plr/nlr; %Diagnostic odds ratio
 orci=exp(reallog(DOR)+cv); %OR confidence interval
 fprintf('Diagnostic odds ratio: %0.4f (%0.4f - %0.4f)\n',DOR,orci(1),orci(2))
+fprintf('Normalized Diagnostic odds ratio: %0.4f\n',(DOR-1)/(DOR+1))
+Phi=(det(x)-N/2)/realsqrt(prod(cs)*prod(rs));
+phi_hat=max(0,Phi^2-1/(N-1));
+k_hat=2-1/(N-1);
+V=sqrt(phi_hat/(k_hat-1));
+fprintf('Cramer''s V: %0.4f\n',V)
+switch sign(V)
+    case -1
+        txt2='negative association (protective factor)';
+    case 1
+        txt2='positive association (risk factor)';
+end
+V=abs(V);
+if V<=0.3
+    txt1='Weak ';
+elseif (V>0.3 && V<=0.7)
+    txt1='Moderate ';
+else
+    txt1='Strong ';
+end
+disp([txt1 txt2])
+disp(' ')
+disp('Bayesian Credibility Assessment')
+orci=reallog(orci);
+cor=exp(-diff(orci)^2/(4*realsqrt(prod(orci)))); %Critical odds ratio (COR)
+if DOR<1
+    fprintf('Critical Diagnostic Odds Ratio: %0.4f\n',cor)
+    if DOR<cor
+        fprintf('DOR<CDOR. Test is credible at the %d%%\n',(1-alpha)*100)
+    else
+        fprintf('DOR>=COR. Test isn''t credible at the %d%%\n',(1-alpha)*100)
+    end
+else
+    cor=1/cor; %correct cor
+    fprintf('Critical Diagnostic Odds Ratio: %0.4f\n',cor)
+    if DOR>cor
+        fprintf('DOR>COR. Test is credible at the %d%%\n',(1-alpha)*100)
+    else
+        fprintf('DOR<=COR. Test isn''t credible at the %d%%\n',(1-alpha)*100)
+    end
+end
+disp(' ')
+
+%risk ratio (RR)
+p=x(:,1)./rs; 
+rr=p(1)/p(2); 
+rrse=realsqrt(sum(1./x(:,1)-1./rs)); %standard error of log(RR)
+rrci=exp(reallog(rr)+cv); %RR confidence interval
+d=abs(diff(p)); %absolute risk reduction
+rrr=d/p(1); %relative risk reduction
+fprintf('Risk Ratio: %0.4f<%0.4f<%0.4f\n',rrci(1),rr,rrci(2))
+fprintf('Absolute risk reduction: %0.1f%%\n',d*100)
+fprintf('Relative risk reduction: %0.1f%%\n',rrr*100)
+disp(' ')
+
+%Yule
+Yule=(DOR-1)/(DOR+1);
+fprintf('Yule''s Coefficient: %0.4f\n',Yule)
+%Tetrachoric
+tetra=cos(pi/(1+sqrt(DOR)));
+fprintf('Tetrachoric Coefficient: %0.4f\n',tetra)
 
 %Discriminant power
 %The discriminant power for a test, also termed the test effectiveness, is a
@@ -291,10 +503,12 @@ fprintf('Diagnostic odds ratio: %0.4f (%0.4f - %0.4f)\n',DOR,orci(1),orci(2))
 %interpreted as the standardized distance between the means for both populations.     
 %A test with a discriminant value of 1 is not effective in discriminating between affected and unaffected individuals.
 %A test with a discriminant value of 3 is effective in discriminating between affected and unaffected individuals.
-dpwr=(realsqrt(3)/pi)*sum(log(SS./fp)); %Discriminant power
-fprintf('Discriminant Power: %0.1f\n',dpwr)
-disp([blanks(5) 'A test with a discriminant value of 1 is not effective in discriminating between affected and unaffected individuals.'])
-disp([blanks(5) 'A test with a discriminant value of 3 is effective in discriminating between affected and unaffected individuals.'])
+if all(x(:))
+    dpwr=(realsqrt(3)/pi)*sum(log(SS./fp)); %Discriminant power
+else
+    dpwr=(realsqrt(3)/pi)*sum(log(SSy./fpy)); %Discriminant power
+end
+fprintf('Discriminant Power: %0.4f\n',dpwr)
 
 
 %Display graphs
@@ -321,13 +535,13 @@ legend(H,'False Positive','True Positive (Sensibility)','False Negative','True N
 %The pie chart uses a common radius and varies the central angle according to
 %the data. That is, the angle is proportional to the frequency. So if the i-th
 %point has count X and the total count is N, the i-th angle is 360*(X/N). 
-%For the rose plot, the angle is constant (i.e., divide 360 by the number of
+%For the rose plot, the angle is constant (i.e, divide 360 by the number of
 %groups, k) and it is the square root of the radius that is proportional to the
 %data. 
 %According to Wainer (Wainer (1997), Visual Revelations: Graphical Tales of Fate
-%and Deception from Napolean Bonaporte to Ross Perot, Copernicus, Chapter 11.),
+%and Deception from Napolean Bonaporte to Ross Perot, Copernicus, Chapter 11),
 %the use of a common angle is the strength of the rose plot since it allows us
-%to easily compare a sequence of rose plots (i.e., the corresponding segments in
+%to easily compare a sequence of rose plots (i.e, the corresponding segments in
 %different rose plots are always in the same relative position). 
 %In particular, this makes rose plots an effective technique for displaying the
 %data in contingency tables.  
@@ -379,8 +593,8 @@ end
 
 function ci=newcombe(p)
 a=2*N*p+z^2;
-b=z*realsqrt((z^2-2-1/N+4*p*(N*(1-p)+1)));
-c=(2*(N+z^2));
+b=z*realsqrt(z^2-2-1/N+4*p*(N*(1-p)+1));
+c=2*(N+z^2);
 %Of course, the critical interval lower bound cannot be less than 0 and the
 %upper bound cant be greater than 1 and so:
 ci(1)=max([0 (a-b-1)/c]);
