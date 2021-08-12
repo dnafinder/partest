@@ -7,16 +7,6 @@ clinical test.
      Input:
            X is the following 2x2 matrix.
            ALPHA - significance level for confidence intervals (default = 0.05).
- 
- ....................Affected(D+)..Healthy(D-)
-                    _______________________
- Positive Test(T+)  |   True    |  False    |
-                   | positives | positives |
-                   |___________|___________|
-                   |  False    |   True    |
- Negative Test(T-)  | negatives | negatives |
-                   |___________|___________|
- 
      Outputs:
            - Prevalence
            - Sensibility and false negative rate
