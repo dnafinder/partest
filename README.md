@@ -89,7 +89,7 @@ clinical test.
   
  F1-measure (Sørensen–Dice index): 0.8077 (0.7919 - 0.8227)
  G-measure (Fowlkes–Mallows index): 0.8123 (0.7966 - 0.8271)
- Matthews index: 0.7151 (0.6972 - 0.7324)
+ Matthews index: 0.7151 - Normalized Index 0.8575 (0.8433 - 0.8707)
   
  Threat score (TS) or critical success index (CSI): 0.6775 (0.6590 - 0.6954)
  Gilbert Skill Score: 0.5451 (0.5256 - 0.5644)
