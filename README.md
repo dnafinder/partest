@@ -40,10 +40,19 @@ Optionally specify both alpha and prevalence:
 X:
    2×2 numeric matrix of non-negative integers with layout
 
+```text
+
       Affected   Healthy
     ------------------------
 T+       TP        FN
 T-       FP        TN
+
+```
+
+Example matrix:
+   x = [A B;
+        C D];
+
 
 ALPHA (optional):
    Scalar in (0,1), significance level for confidence intervals.
