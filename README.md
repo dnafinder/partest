@@ -1,250 +1,186 @@
-# partest
-This function calculate the performance, based on Bayes theorem, of a
-clinical test.
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=dnafinder/partest)
 
- Syntax: 	PARTEST(X,ALPHA)
-      
-     Input:
-           X is the following 2x2 matrix.
-           ALPHA - significance level for confidence intervals (default = 0.05).
-     Outputs:
-           All that you could compute onto a 2x2 matrix
- 
-      Example: 
- 
-       x=[731 270;78 1500]
-           Calling on Matlab the function: partest(x)
-           Answer is:
- 
- CONFUSION MATRIX
-                     Affected    Healthy
-                     ________    _______
+🌐 Overview
+This repository contains the MATLAB function `partest.m`, which performs an extensive diagnostic, predictive, similarity, accuracy, association, and entropy-based analysis of a binary diagnostic test given a 2×2 confusion matrix.
 
-    Positive_test      731         270  
-    Negative_test       78        1500  
+⭐ Features
+- Confusion matrix display and basic counts (TP, FN, FP, TN, totals)
+- Imbalance test between groups (Z test)
+- Sensitivity, Specificity, FNR, FPR with Newcombe–Wilson confidence intervals
+- AUC, Distance Index, and Gini Index with confidence intervals
+- Youden’s J (Informedness) and Number Needed to Diagnose (NND)
+- Likelihood ratios (PLR, NLR) with confidence intervals and qualitative interpretation
+- Predictive values (PPV, NPV), FDR, FOR, prevalence threshold, Lift and Information Score
+- Markedness (MK) and Number Needed to Predict (NNP)
+- Similarity and overlap indices (Bray–Curtis, Jaccard, Otsuka–Ochiai, Overlap, Braun–Blanquet)
+- Accuracy metrics: ACC, bACC, Optimized Precision, F1, adjusted F, G-measure, adjusted G
+- Matthews Correlation Coefficient (MCC) and normalized Matthews index (with MK/J formulation if prevalence is provided)
+- Skill scores: Gilbert Skill Score, True Skill Statistic, Heidke Skill Score (Cohen’s kappa)
+- Confusion Entropy (CEN) and modified CEN with derived indices
+- Association measures: Test Bias, Error Odds Ratio, Diagnostic Odds Ratio (DOR), Yule coefficient, tetrachoric coefficient, Cramer’s V, discriminant power, Bayesian credibility assessment
+- Two summary plots (stacked “PARTEST GRAPH” and “ROSEPLOT PARTEST GRAPH”)
 
-----------------------------------------------------------------------------------------------------
-BASIC PARAMETERS
-                                 Parameter
-                                 _________
+🛠️ Installation
+1. Download or clone the repository:
+   https://github.com/dnafinder/partest
+2. Add the folder to your MATLAB path:
+   addpath('path_to_folder');
 
-    True_Positive_TP                731   
-    False_Negative_FN                78   
-    False_Positive_FP               270   
-    True Negative_TN               1500   
-    Condition_Positive_P            809   
-    Condition_Negative_N           1770   
-    Test_Outcome_Positive_TOP      1001   
-    Test_Outcome_Negative_TON      1578   
-    Population_POP                 2579   
+▶️ Usage
+Call the function with a 2×2 confusion matrix:
+   partest(X)
 
-----------------------------------------------------------------------------------------------------
-IMBALANCE TEST
- 
-Imbalance ratio (IR): 2.1879
-Z = 18.9233 p-value = 0.0000 - Groups are unbalanced
-----------------------------------------------------------------------------------------------------
-PERFORMANCE PARAMETERS
-                                Parameter      LB        UB        Comment  
-                                _________    ______    ______    ___________
+Optionally specify the confidence level (alpha):
+   partest(X, alpha)
 
-    Sensitivity_TPR              0.9036      0.8914    0.9146    'None'     
-    False_Negative_Rate_FNR      0.0964      0.0854    0.1086    'None'     
-    Specificity_TNR              0.8475      0.8329     0.861    'None'     
-    False_Positive_Rate_FPR      0.1525       0.139    0.1671    'None'     
-    Area_Under_the_Curve_AUC     0.8755      0.8626    0.8885    'Good test'
-    Distance Index_dInd          0.1805         NaN       NaN    'None'     
-    Gini_Index_GI                 0.751      0.7251     0.777    'None'     
+Optionally specify both alpha and prevalence:
+   partest(X, alpha, pr)
 
-                                     Parameter
-                                     _________
+🔣 Inputs
+X:
+   2×2 numeric matrix of non-negative integers with layout
 
-    Automatic_Manual                     192  
-    Youden_Index_J                     0.751  
-    Number_needed_to_diagnose_NND     1.3315  
+      Affected   Healthy
+    ------------------------
+T+       TP        FN
+T-       FP        TN
 
-Around 134 patients need to be tested to correctly detect 100 positive tests for the presence of disease
- 
-----------------------------------------------------------------------------------------------------
-PREDICTIVE PARAMETERS
- 
-Estimed Prevalence: 0.3137 (0.2959 - 0.3321)
- 
-                                     Parameter      LB        UB                             Comment                        
-                                     _________    ______    ______    ______________________________________________________
+ALPHA (optional):
+   Scalar in (0,1), significance level for confidence intervals.
+   Default: 0.05 (95% confidence).
 
-    Positive_Likelihood_Ratio_PLR     5.9235      5.6953    6.1609    'Moderate increase in possibility of disease presence'
-    Negative_Likelihood_Ratio_NLR     0.1138      0.1094    0.1183    'Moderate increase in possibility of disease absence' 
-    Positive_Prediction_Value_PPV     0.7303      0.7126    0.7472    'None'                                                
-    False_Discovery_Rate_FDR          0.2697      0.2528    0.2874    'None'                                                
-    Negative_Predictive_Value_NPV     0.9506      0.9413    0.9585    'None'                                                
-    False_Omission_Rate_FOR           0.0494      0.0415    0.0587    'None'                                                
+PR (optional):
+   Scalar in [0,1], disease prevalence.
+   • If provided, it is treated as the true prevalence.
+   • If omitted or set to NaN, prevalence is estimated from the confusion matrix as:
 
-                                    Parameter
-                                    _________
+     pr = (TP + FN) / (TP + FN + FP + TN)
 
-    Prevalence_Threshold_PT          0.2912  
-    Lift_Score_LS                     2.328  
-    Information_Score_IS             1.2191  
-    Markedness_MK                    0.6808  
-    Number_needed_to_predict_NNP     1.4688  
+📤 Outputs
+If called without output:
+   Results are printed to the Command Window and two figures are generated:
 
-Around 147 patients need to be screened to correctly predict 100 diagnosis
- 
-----------------------------------------------------------------------------------------------------
-SIMILARITY PARAMETERS
-                                     Parameter      LB        UB  
-                                     _________    ______    ______
+   • Tables for:
+     - basic parameters and imbalance test
+     - performance metrics (Sensitivity, Specificity, AUC, etc.)
+     - predictive metrics (PLR, NLR, PPV, NPV, FDR, FOR, MK, NNP, etc.)
+     - similarity indices (Bray–Curtis, Jaccard, Overlap, Otsuka–Ochiai, etc.)
+     - accuracy and skill scores (ACC, bACC, F1, MCC, TSS, HSS, etc.)
+     - entropy measures (CEN, modified CEN)
+     - association and credibility measures (TB, Error OR, DOR, Yule, Cramer’s V, COR, etc.)
 
-    Bray_Curtis_Dissimilarity_BCD     0.0372      0.0304    0.0454
-    Similarity_Index_sInd             0.8724      0.8588    0.8849
-    Jaccard_Index_JI                  0.6775       0.659    0.6954
-    Overlap_Coefficient_OC            0.9036      0.8914    0.9146
-    Braun_Blanquet_similarity_BB      0.7303      0.7126    0.7472
-    Otsuka_Ochiai_Coefficient_OOC     0.8123      0.7966    0.8271
+   • Plots:
+     - PARTEST GRAPH: stacked areas of TP, FP, FN, TN vs subject proportion
+     - ROSEPLOT PARTEST GRAPH: rose/coxcomb plot of error and success components
 
-----------------------------------------------------------------------------------------------------
-ACCURACY PARAMETERS
-                                      Parameter      LB        UB  
-                                      _________    ______    ______
+If called with output:
+   The function is currently designed as a display/visualization tool only and does not return a structure.
+   If you need programmatic access to the metrics, you can adapt the code so that all computed indices are stored in a struct (e.g. stats) before being displayed.
 
-    Random_Accuracy_RACC               0.1218      0.1095    0.1351
-    Random_Accuracy_Unbiased_RACCU     0.1231      0.1108    0.1366
+📘 Confusion matrix structure
+The expected confusion matrix is:
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+   X = [ TP  FN
+         FP  TN ];
 
-    Accuracy_ACC                          0.8651      0.8511    0.8779    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1349      0.1221    0.1489    'None'                                                                     
-    Identification_Index_II               0.7301      0.7023    0.7558    'None'                                                                     
-    Number_needed_to_screen_NNS           1.3696      1.3231     1.424    'Around 137 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     7.4109      6.7181    8.1896    'Around 742 patients need to be screened to have 100 mis-diagnosis'        
+where:
+   TP = True Positives (affected subjects with positive test)
+   FN = False Negatives (affected subjects with negative test)
+   FP = False Positives (healthy subjects with positive test)
+   TN = True Negatives (healthy subjects with negative test)
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+From this matrix, `partest` derives:
+   • Column sums: Condition Positive (P), Condition Negative (N)
+   • Row sums: Test Outcome Positive (TOP), Test Outcome Negative (TON)
+   • Total population (POP)
 
-    Balanced_Accuracy_bACC                0.8755       0.862    0.8879    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1245      0.1121     0.138    'None'                                                                     
-    Identification_Index_II                0.751       0.724    0.7758    'None'                                                                     
-    Number_needed_to_screen_NNS           1.3315       1.289    1.3812    'Around 134 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     8.0335      7.2482    8.9199    'Around 804 patients need to be screened to have 100 mis-diagnosis'        
+📘 Metrics and interpretation (summary)
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+Basic performance:
+   • Sensitivity (TPR) = TP / (TP + FN)
+   • Specificity (TNR) = TN / (FP + TN)
+   • False Negative Rate (FNR) = 1 − TPR
+   • False Positive Rate (FPR) = 1 − TNR
+   • Confidence intervals for proportions via Newcombe–Wilson score method
 
-    Optimized_Precision_OP                 0.833      0.8179    0.8471    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR             0.167      0.1529    0.1821    'None'                                                                     
-    Identification_Index_II                0.666      0.6358    0.6942    'None'                                                                     
-    Number_needed_to_screen_NNS           1.5015      1.4405    1.5727    'Around 151 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     5.9884      5.4926      6.54    'Around 599 patients need to be screened to have 100 mis-diagnosis'        
+AUC and related indices:
+   • AUC (approximate) = (TPR + TNR) / 2
+   • Distance Index d_ind = sqrt(FNR^2 + FPR^2)
+   • Gini Index G = 2·AUC − 1
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+Imbalance & diagnostic metrics:
+   • Imbalance ratio (IR) between groups
+   • Youden’s J (Informedness): J = TPR + TNR − 1
+   • Number Needed to Diagnose: NND = 1 / J
 
-    F1_Measure                            0.8077      0.7919    0.8227    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1923      0.1773    0.2081    'None'                                                                     
-    Identification_Index_II               0.6155      0.5837    0.6454    'None'                                                                     
-    Number_needed_to_screen_NNS           1.6248      1.5495    1.7131    'Around 163 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     5.2011       4.805    5.6392    'Around 521 patients need to be screened to have 100 mis-diagnosis'        
+Predictive values & likelihood ratios:
+   • Positive Likelihood Ratio: PLR = TPR / FPR
+   • Negative Likelihood Ratio: NLR = FNR / TNR
+   • Positive Predictive Value (PPV) and Negative Predictive Value (NPV) via Bayes’ theorem
+   • False Discovery Rate (FDR) and False Omission Rate (FOR)
+   • Prevalence Threshold (PT), Lift Score (LS), Information Score (IS)
+   • Markedness: MK = PPV + NPV − 1
+   • Number Needed to Predict: NNP = 1 / MK
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+Similarity indices:
+   • Bray–Curtis Dissimilarity (BCD)
+   • Similarity Index (sInd) derived from distance index
+   • Jaccard Index (JI)
+   • Overlap Coefficient (OC)
+   • Braun–Blanquet similarity (BB)
+   • Otsuka–Ochiai Coefficient (OOC), equivalent to cosine similarity
 
-    Adjusted_F_Score                      0.8947      0.8821    0.9062    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1053      0.0938    0.1179    'None'                                                                     
-    Identification_Index_II               0.7894      0.7642    0.8124    'None'                                                                     
-    Number_needed_to_screen_NNS           1.2667       1.231    1.3086    'Around 127 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     9.4982      8.4814    10.657    'Around 950 patients need to be screened to have 100 mis-diagnosis'        
+Accuracy & skill scores:
+   • Random Accuracy (RACC) and Unbiased Random Accuracy (RACCU)
+   • Accuracy (ACC), Balanced Accuracy (bACC), Optimized Precision (OP)
+   • F1 score (harmonic mean of Sensitivity and Precision)
+   • Adjusted F-score (AGF)
+   • G-measure (geometric mean of Sensitivity and Precision) and adjusted G-measure
+   • Matthews Correlation Coefficient (MCC) and normalized Matthews index:
+       - if PR is provided, MCC is derived from Youden’s J and Markedness MK
+       - otherwise, MCC is computed from the 2×2 determinant formula
+   • Gilbert Skill Score (GSS)
+   • True Skill Statistic (TSS)
+   • Heidke Skill Score (HSS, Cohen’s kappa)
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+Derived indices for each accuracy-like metric:
+   • Misclassification Rate (MCR) = 1 − ACC
+   • Identification Index (II) = 2·ACC − 1
+   • Number Needed to Screen (NNS) = 1 / II (when defined)
+   • Number Needed to Misdiagnose (NNMD) = 1 / MCR
+   • Qualitative interpretation of accuracy strength (negligible, weak, moderate, strong, very strong)
 
-    G_Measure                             0.8123      0.7966    0.8271    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1877      0.1729    0.2034    'None'                                                                     
-    Identification_Index_II               0.6246      0.5932    0.6542    'None'                                                                     
-    Number_needed_to_screen_NNS           1.6009      1.5285    1.6858    'Around 161 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     5.3282      4.9164    5.7839    'Around 533 patients need to be screened to have 100 mis-diagnosis'        
+Entropy measures:
+   • Confusion Matrix Entropy (CEN)
+   • Modified CEN
+   • For each: confidence intervals, MCR, II, NNS, NNMD (when meaningful)
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+Association measures:
+   • Test Bias (TB) and interpretation (perfect, over-/under-estimation)
+   • Error Odds Ratio (error distribution between groups)
+   • Diagnostic Odds Ratio (DOR) with confidence interval and qualitative assessment
+   • Yule coefficient (normalized DOR) with strength classification
+   • Tetrachoric Coefficient
+   • Cramer’s V with association strength classification (weak, moderate, strong)
+   • Discriminant Power
+   • Bayesian Credibility Assessment via Critical Odds Ratio (COR) and “credible / not credible” text
 
-    Adjusted_G_Measure                    0.8266      0.8113    0.8409    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1734      0.1591    0.1887    'None'                                                                     
-    Identification_Index_II               0.6532      0.6227    0.6819    'None'                                                                     
-    Number_needed_to_screen_NNS           1.5308      1.4665     1.606    'Around 154 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     5.7677      5.3005    6.2865    'Around 577 patients need to be screened to have 100 mis-diagnosis'        
+📝 Notes
+• The function is non-interactive: there are no dialog boxes; prevalence is either provided as argument or estimated from the table.  
+• No specialized toolbox is required: geometric and harmonic means are computed via explicit formulas.  
+• Zeros in the 2×2 table are not automatically corrected; if needed, continuity corrections must be applied by the user before calling `partest`.  
+• The main purpose is an in-depth interpretative report. For a compact numeric API, you can wrap or modify the function to return a `stats` structure.
 
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
+📚 Citation
+If you use this function in scientific work, you may cite it as:
 
-    Normalized_Matthews_Index_nMCI        0.8575      0.8433    0.8707    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.1425      0.1293    0.1567    'None'                                                                     
-    Identification_Index_II               0.7151      0.6866    0.7414    'None'                                                                     
-    Number_needed_to_screen_NNS           1.3984      1.3488    1.4564    'Around 140 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     7.0195      6.3829     7.733    'Around 702 patients need to be screened to have 100 mis-diagnosis'        
+Cardillo G. (2025). PARTEST: performance analysis of a binary diagnostic test on a 2×2 confusion matrix.  
+GitHub: https://github.com/dnafinder/partest
 
-                                         Parameter      LB        UB                                        Comment                                   
-                                         _________    ______    ______    ____________________________________________________________________________
+👤 Author
+Giuseppe Cardillo  
+Email: giuseppe.cardillo.75@gmail.com  
+GitHub: https://github.com/dnafinder
 
-    Gilbert Skill Score                   0.5451      0.5256    0.5644    'Accuracy is moderate'                                                      
-    Misclassification_Rate_MCR            0.4549      0.4356    0.4744    'None'                                                                      
-    Identification_Index_II               0.0902      0.0513    0.1289    'None'                                                                      
-    Number_needed_to_screen_NNS           11.087      7.7605    19.507    'Around 1109 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     2.1983      2.1081    2.2958    'Around 220 patients need to be screened to have 100 mis-diagnosis'         
-
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
-
-    True Skill Statistic                   0.751      0.7338    0.7675    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR             0.249      0.2325    0.2662    'None'                                                                     
-    Identification_Index_II               0.5021      0.4676    0.5351    'None'                                                                     
-    Number_needed_to_screen_NNS           1.9917      1.8688    2.1387    'Around 200 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     4.0167      3.7566    4.3018    'Around 402 patients need to be screened to have 100 mis-diagnosis'        
-
-                                         Parameter      LB        UB                                        Comment                                  
-                                         _________    ______    ______    ___________________________________________________________________________
-
-    Heidke Skill Score                    0.7056      0.6768    0.7344    'Accuracy is strong'                                                       
-    Misclassification_Rate_MCR            0.2944       0.277    0.3125    'None'                                                                     
-    Identification_Index_II               0.4112      0.3536    0.4687    'None'                                                                     
-    Number_needed_to_screen_NNS           2.4321      2.1335    2.8278    'Around 244 patients need to be screened to prevent 100 deaths by disease.'
-    Number_needed_to_misdiagnose_NNMD     3.3965      3.2001    3.6107    'Around 340 patients need to be screened to have 100 mis-diagnosis'        
-
-----------------------------------------------------------------------------------------------------
-ENTROPY MEASURE
-                                         Parameter      LB        UB                                    Comment                              
-                                         _________    ______    ______    ___________________________________________________________________
-
-    Confusion_Matrix_Entropy_CEN          0.4844       0.465    0.5039    'Accuracy is weak'                                                 
-    Misclassification_Rate_MCR            0.5156      0.4961     0.535    'None'                                                             
-    Identification_Index_II                  NaN         NaN       NaN    'None'                                                             
-    Number_needed_to_screen_NNS              NaN         NaN       NaN    'Not computable'                                                   
-    Number_needed_to_misdiagnose_NNMD     1.9396      1.8691    2.0158    'Around 194 patients need to be screened to have 100 mis-diagnosis'
-
-                                         Parameter      LB        UB                                    Comment                              
-                                         _________    ______    ______    ___________________________________________________________________
-
-    Modified_CEN                          0.4801      0.4606    0.4996    'Accuracy is weak'                                                 
-    Misclassification_Rate_MCR            0.5199      0.5004    0.5394    'None'                                                             
-    Identification_Index_II                  NaN         NaN       NaN    'None'                                                             
-    Number_needed_to_screen_NNS              NaN         NaN       NaN    'Not computable'                                                   
-    Number_needed_to_misdiagnose_NNMD     1.9233       1.854    1.9982    'Around 193 patients need to be screened to have 100 mis-diagnosis'
-
-----------------------------------------------------------------------------------------------------
-ASSOCIATION MEASURE
-                                 Parameter      LB         UB                              Comment                            Critical_Bayesian_OR    Bayesian_Credibility
-                                 _________    _______    _______    ______________________________________________________    ____________________    ____________________
-
-    Test_Bias_TB                   1.2373      0.9474      1.616    'There is not test bias'                                            NaN            'Not needed'       
-    Error_OR                       1.6869      1.2916     2.2032    'Test wrongly classifies in positives'                           1.1718            'Test is credible' 
-    Diagnostic_Odds_Ratio_DOR      52.066      39.865         68    'Test discriminates between diseased and not diseased'           1.0182            'Test is credible' 
-    Yule_Coefficient              0.96231     0.95106    0.97101    'Strong'                                                            NaN            'Not needed'       
-    Tetrachoric_Coefficient       0.92777     0.91054    0.94501    'None'                                                              NaN            'Not needed'       
-    Cramer_V                      0.71409         NaN        NaN    'Strong association'                                                NaN            'Not needed'       
-    Discriminant_Power             2.1791         NaN        NaN    'Fair'  
-    
-  
- To cite this file, this would be an appropriate format:
- Cardillo G. (2006). Clinical test performance: the performance of a
- clinical test based on the Bayes theorem. 
- http://www.mathworks.com/matlabcentral/fileexchange/12705
+⚖️ License
+This project is released under the GNU GPL-3.0 license.
